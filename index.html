@@ -4,6 +4,7 @@
         <script src="https://aframe.io/releases/0.7.0/aframe.min.js"></script>
         <script src="https://cdn.rawgit.com/mrdoob/three.js/r84/build/three.js"></script>
         <script src="https://sdk.altvr.com/libs/altspace.js/2.7.3/altspace.min.js"></script>
+        <script type="text/javascript" src="data.json"></script>
         <script>
             AFRAME.registerComponent("animate-on-click", {
                 schema: {
@@ -19,7 +20,7 @@
                 var animatePresent = true;
                 var animateFuture = true;
                 var pastPresentFuture = el.id;
-                var currentCard;
+                var currentCard = document.getElementById("currentcard");
 
                 el.addEventListener("click", function () {
                     console.log(pastPresentFuture);
@@ -31,10 +32,12 @@
                 } else if (pastPresentFuture === "present" && animatePresent === true) {
                     el.emit(eventName);
                     animatePresent = false;
+                    currentCard.setAttribute('src', "/tarot/" + randomNumberPresent + ".jpg");
                     console.log("Present card turned over.");
                 } else if (pastPresentFuture === "future" && animateFuture === true) {
                     el.emit(eventName);
                     animateFuture = false;
+                    currentCard.setAttribute('src', "/tarot/" + randomNumberFuture + ".jpg");
                     console.log("Future card turned over.");
                     
                 }
@@ -44,7 +47,7 @@
     });
         </script>
     </head>
-    <body>
+    <body onload>
         <a-scene altspace="fullspace:true">
 
             <a-assets>
@@ -54,6 +57,7 @@
                 <a-asset-item id="base-mtl" src="models/base.mtl"></a-asset-item>
                 <a-asset-item id="tablemain-obj" src="models/tablemain.obj"></a-asset-item>
                 <a-asset-item id="tablemain-mtl" src="models/tablemain.mtl"></a-asset-item>
+                <a-asset-item id="deck" src="deck.json"></a-asset-item>
                 <img id="card-back" src="images/card-back.jpg" />
 
             </a-assets>
@@ -99,7 +103,7 @@
         </a-scene>
 
                <script>
-            // wraps up the renderer, scene, and animation loop
+            var data;
             var randomNumberPresent = Math.floor(Math.random() * 78 + 1);
             var randomNumberFuture = Math.floor(Math.random() * 78 + 1);
             var randomNumberPast = Math.floor(Math.random() * 78 + 1);
@@ -118,26 +122,14 @@
             backPlanePast.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberPast + ".jpg");
             console.log("Past number : " + randomNumberPast);
 
-            /*
-            // Past Animation
-            var past = document.getElementById("past");
-            past.addEventListener('click',function(){
-                 past.emit("startPastAnimation");
-            });
+            request = new XMLHttpRequest();
+            request.open("GET", "https://cdn.rawgit.com/Winrur/tarot-test-2/5d6d8ca4/deck.json", true);
 
-            // Present Animation
-            var present = document.getElementById("present");
-            present.addEventListener('click',function(){
-                 present.emit("startPresentAnimation");
-            });
-
-            // Past Animation
-            var future = document.getElementById("future");
-            future.addEventListener('click',function(){
-                 future.emit("startFutureAnimation");
-            });
-            */
-
+                    request.onload = function() {
+                    data = JSON.parse(request.responseText);
+            };
+            
+            request.send();
         </script>
 
     </body>
