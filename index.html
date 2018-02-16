@@ -4,7 +4,8 @@
         <script src="https://aframe.io/releases/0.7.0/aframe.min.js"></script>
         <script src="https://cdn.rawgit.com/mrdoob/three.js/r84/build/three.js"></script>
         <script src="https://sdk.altvr.com/libs/altspace.js/2.7.3/altspace.min.js"></script>
-        <script type="text/javascript" src="data.json"></script>
+        <script src="require.js"></script>
+        <script type="application/json" src="deck2.json"></script>
         <script>
             AFRAME.registerComponent("animate-on-click", {
                 schema: {
@@ -57,7 +58,6 @@
                 <a-asset-item id="base-mtl" src="models/base.mtl"></a-asset-item>
                 <a-asset-item id="tablemain-obj" src="models/tablemain.obj"></a-asset-item>
                 <a-asset-item id="tablemain-mtl" src="models/tablemain.mtl"></a-asset-item>
-                <a-asset-item id="deck" src="deck.json"></a-asset-item>
                 <img id="card-back" src="images/card-back.jpg" />
 
             </a-assets>
@@ -103,7 +103,7 @@
         </a-scene>
 
                <script>
-            var data;
+            var tarotArray;
             var randomNumberPresent = Math.floor(Math.random() * 78 + 1);
             var randomNumberFuture = Math.floor(Math.random() * 78 + 1);
             var randomNumberPast = Math.floor(Math.random() * 78 + 1);
@@ -122,15 +122,10 @@
             backPlanePast.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberPast + ".jpg");
             console.log("Past number : " + randomNumberPast);
 
-            request = new XMLHttpRequest();
-            request.open("GET", "https://cdn.rawgit.com/Winrur/tarot-test-2/5d6d8ca4/deck.json", true);
-            request.setRequestHeader('Content-type','application/json; charset=utf-8');
+            var tarotDeck = require(['./deck'], function (deck) {});
 
-                    request.onload = function() {
-                    data = JSON.parse(request.responseText);
-            };
-            
-            request.send();
+            var parsedTarotDeck = JSON.parse(tarotDeck.readFileSync('/deck.json', 'utf8'));
+            console.log(parsedTarotDeck);
         </script>
 
     </body>
