@@ -28,17 +28,17 @@
                 if (pastPresentFuture === "past" && animatePast === true) {
                     el.emit(eventName);
                     animatePast = false;
-                    currentCard.setAttribute('src', "/tarot/" + randomNumberPast + ".jpg");
+                    currentCard.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberPast + ".jpg");
                     console.log("Past card turned over.");
                 } else if (pastPresentFuture === "present" && animatePresent === true) {
                     el.emit(eventName);
                     animatePresent = false;
-                    currentCard.setAttribute('src', "/tarot/" + randomNumberPresent + ".jpg");
+                    currentCard.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberPresent + ".jpg");
                     console.log("Present card turned over.");
                 } else if (pastPresentFuture === "future" && animateFuture === true) {
                     el.emit(eventName);
                     animateFuture = false;
-                    currentCard.setAttribute('src', "/tarot/" + randomNumberFuture + ".jpg");
+                    currentCard.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberFuture + ".jpg");
                     console.log("Future card turned over.");
                     
                 }
@@ -121,11 +121,6 @@
             var backPlanePast = document.getElementById("backplanepast");
             backPlanePast.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberPast + ".jpg");
             console.log("Past number : " + randomNumberPast);
-
-            var tarotDeck = require(['./deck'], function (deck) {});
-
-            var parsedTarotDeck = JSON.parse(tarotDeck.readFileSync('/deck.json', 'utf8'));
-            console.log(parsedTarotDeck);
         </script>
 
     </body>
