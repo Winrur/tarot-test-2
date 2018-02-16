@@ -124,6 +124,7 @@
 
             request = new XMLHttpRequest();
             request.open("GET", "https://cdn.rawgit.com/Winrur/tarot-test-2/5d6d8ca4/deck.json", true);
+            request.setRequestHeader('Content-type','application/json; charset=utf-8');
 
                     request.onload = function() {
                     data = JSON.parse(request.responseText);
