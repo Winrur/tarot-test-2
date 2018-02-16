@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://aframe.io/releases/0.7.0/aframe.min.js"></script>
+        <script src="https://cdn.rawgit.com/mrdoob/three.js/r84/build/three.js"></script>
+        <script src="https://sdk.altvr.com/libs/altspace.js/2.7.3/altspace.min.js"></script>
+        <script>
+            AFRAME.registerComponent("animate-on-click", {
+                schema: {
+                    event: {type: "string"}
+            },
+
+            init: function () {
+
+                var el = this.el;
+                var eventName = this.data.event;
+                var timeoutSet;
+                var animatePast = true;
+                var animatePresent = true;
+                var animateFuture = true;
+                var pastPresentFuture = el.id;
+                var currentCard;
+
+                el.addEventListener("click", function () {
+                    console.log(pastPresentFuture);
+                if (pastPresentFuture === "past" && animatePast === true) {
+                    el.emit(eventName);
+                    animatePast = false;
+                    currentCard.setAttribute('src', "/tarot/" + randomNumberPast + ".jpg");
+                    console.log("Past card turned over.");
+                } else if (pastPresentFuture === "present" && animatePresent === true) {
+                    el.emit(eventName);
+                    animatePresent = false;
+                    console.log("Present card turned over.");
+                } else if (pastPresentFuture === "future" && animateFuture === true) {
+                    el.emit(eventName);
+                    animateFuture = false;
+                    console.log("Future card turned over.");
+                    
+                }
+             })
+
+         }
+    });
+        </script>
+    </head>
+    <body>
+        <a-scene altspace="fullspace:true">
+
+            <a-assets>
+                <a-asset-item id="tablecloth-obj" src="models/tablecloth.obj"></a-asset-item>
+                <a-asset-item id="tablecloth-mtl" src="models/tablecloth.mtl"></a-asset-item>
+                <a-asset-item id="base-obj" src="models/base.obj"></a-asset-item>
+                <a-asset-item id="base-mtl" src="models/base.mtl"></a-asset-item>
+                <a-asset-item id="tablemain-obj" src="models/tablemain.obj"></a-asset-item>
+                <a-asset-item id="tablemain-mtl" src="models/tablemain.mtl"></a-asset-item>
+                <img id="card-back" src="images/card-back.jpg" />
+
+            </a-assets>
+
+            <a-entity obj-model="obj: #tablecloth-obj ; mtl: #tablecloth-mtl" scale="0.007 0.007 0.007" position="0 -0.2 0" n-mesh-collider='type: environment'></a-entity>
+            <a-entity obj-model="obj: #base-obj ; mtl: #base-mtl" scale="0.007 0.007 0.007" position="0 -0.2 0" n-mesh-collider='type: environment'></a-entity>
+            <a-entity obj-model="obj: #tablemain-obj ; mtl: #tablemain-mtl" scale="0.007 0.007 0.007" position="0 -0.2 0" n-mesh-collider='type: environment'></a-entity>
+            <a-plane id="currentcard" src="#card-back" n-billboard position="0 6 0" color="white" scale="1.4 2"></a-plane>
+
+            <a-entity position="-0.6 1.4 0.4" scale="0.1 0.1 0.1" n-text='text: Past'></a-entity>
+            <a-entity position="0 1.4 0.4" scale="0.1 0.1 0.1" n-text='text: Present'></a-entity>
+            <a-entity position="0.6 1.4 0.4" scale="0.1 0.1 0.1" n-text='text: Future'></a-entity>
+
+            <a-entity id="present" animate-on-click="event: startPresentAnimation" position="0 1.3 0.6" scale="0.4 0.5" rotation="270 180">
+                <a-plane id="backplanepresent" material="side: back; src: #card-back"></a-plane>
+                <a-plane material="side: front; src: #card-back"></a-plane>
+                <a-animation attribute="rotation"
+                             dur="1000"
+                             fill="fowards"
+                             to="90 180 0"
+                             begin="startPresentAnimation"></a-animation>
+            </a-entity>
+
+            <a-entity id="future" animate-on-click="event: startFutureAnimation" position="0.6 1.3 0.6" scale="0.4 0.5" rotation="270 180">
+                <a-plane id="backplanefuture" material="side: back; src: #card-back"></a-plane>
+                <a-plane material="side: front; src: #card-back"></a-plane>
+                <a-animation attribute="rotation"
+                             dur="1000"
+                             fill="fowards"
+                             to="90 180 0"
+                             begin="startFutureAnimation"></a-animation>
+            </a-entity>
+
+            <a-entity id="past" animate-on-click="event: startPastAnimation" position="-0.6 1.3 0.6" scale="0.4 0.5" rotation="270 180">
+                <a-plane id="backplanepast" material="side: back; src: #card-back"></a-plane>
+                <a-plane material="side: front; src: #card-back"></a-plane>
+                <a-animation attribute="rotation"
+                             dur="1000"
+                             fill="fowards"
+                             to="90 180 0"
+                             begin="startPastAnimation"></a-animation>
+            </a-entity>
+        </a-scene>
+
+               <script>
+            // wraps up the renderer, scene, and animation loop
+            var randomNumberPresent = Math.floor(Math.random() * 78 + 1);
+            var randomNumberFuture = Math.floor(Math.random() * 78 + 1);
+            var randomNumberPast = Math.floor(Math.random() * 78 + 1);
+            // Present
+            var backPlanePresent = document.getElementById("backplanepresent");
+            backPlanePresent.setAttribute('src', "/tarot/" + randomNumberPresent + ".jpg");
+            console.log("Present number : " + randomNumberPresent);
+
+            // Future
+            var backPlaneFuture = document.getElementById("backplanefuture");
+            backPlaneFuture.setAttribute('src', "/tarot/" + randomNumberFuture + ".jpg");
+            console.log("Future number : " + randomNumberFuture);
+
+            // Past
+            var backPlanePast = document.getElementById("backplanepast");
+            backPlanePast.setAttribute('src', "/tarot/" + randomNumberPast + ".jpg");
+            console.log("Past number : " + randomNumberPast);
+
+            /*
+            // Past Animation
+            var past = document.getElementById("past");
+            past.addEventListener('click',function(){
+                 past.emit("startPastAnimation");
+            });
+
+            // Present Animation
+            var present = document.getElementById("present");
+            present.addEventListener('click',function(){
+                 present.emit("startPresentAnimation");
+            });
+
+            // Past Animation
+            var future = document.getElementById("future");
+            future.addEventListener('click',function(){
+                 future.emit("startFutureAnimation");
+            });
+            */
+
+        </script>
+
+    </body>
+</html>
