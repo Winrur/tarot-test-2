@@ -71,7 +71,7 @@
             <a-entity position="0 1.4 0.4" scale="0.1 0.1 0.1" n-text='text: Present'></a-entity>
             <a-entity position="0.6 1.4 0.4" scale="0.1 0.1 0.1" n-text='text: Future'></a-entity>
 
-            <a-entity id="present" animate-on-click="event: startPresentAnimation" position="0 1.3 0.6" scale="0.4 0.5" rotation="270 180">
+            <a-entity sync sync-transform id="present" animate-on-click="event: startPresentAnimation" position="0 1.3 0.6" scale="0.4 0.5" rotation="270 180">
                 <a-plane id="backplanepresent" material="side: back; src: #card-back"></a-plane>
                 <a-plane material="side: front; src: #card-back"></a-plane>
                 <a-animation attribute="rotation"
@@ -81,7 +81,7 @@
                              begin="startPresentAnimation"></a-animation>
             </a-entity>
 
-            <a-entity id="future" animate-on-click="event: startFutureAnimation" position="0.6 1.3 0.6" scale="0.4 0.5" rotation="270 180">
+            <a-entity sync sync-transform id="future" animate-on-click="event: startFutureAnimation" position="0.6 1.3 0.6" scale="0.4 0.5" rotation="270 180">
                 <a-plane id="backplanefuture" material="side: back; src: #card-back"></a-plane>
                 <a-plane material="side: front; src: #card-back"></a-plane>
                 <a-animation attribute="rotation"
@@ -91,7 +91,7 @@
                              begin="startFutureAnimation"></a-animation>
             </a-entity>
 
-            <a-entity id="past" animate-on-click="event: startPastAnimation" position="-0.6 1.3 0.6" scale="0.4 0.5" rotation="270 180">
+            <a-entity sync sync-transform id="past" animate-on-click="event: startPastAnimation" position="-0.6 1.3 0.6" scale="0.4 0.5" rotation="270 180">
                 <a-plane id="backplanepast" material="side: back; src: #card-back"></a-plane>
                 <a-plane material="side: front; src: #card-back"></a-plane>
                 <a-animation attribute="rotation"
