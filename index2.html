@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://aframe.io/releases/0.7.0/aframe.min.js"></script>
+        <script src="https://cdn.rawgit.com/mrdoob/three.js/r84/build/three.js"></script>
+        <script src="https://sdk.altvr.com/libs/altspace.js/2.7.3/altspace.min.js"></script>
+        <script src="require.js"></script>
+        <script type="application/json" src="deck2.json"></script>
+        <script src="https://www.gstatic.com/firebasejs/4.10.0/firebase.js"></script>
+        <script>
+         // Initialize Firebase
+         var config = {
+         apiKey: "AIzaSyBLgpzBCUGvEj_Mp04itbrTyvYFC8EtFUg",
+         authDomain: "tarotapp-f5b54.firebaseapp.com",
+         databaseURL: "https://tarotapp-f5b54.firebaseio.com",
+         projectId: "tarotapp-f5b54",
+         storageBucket: "tarotapp-f5b54.appspot.com",
+         messagingSenderId: "26210660102"
+         };
+         firebase.initializeApp(config);
+        </script>
+        <script>
+            AFRAME.registerComponent("animate-on-click", {
+                schema: {
+                    event: {type: "string"}
+            },
+
+            init: function () {
+
+                var el = this.el;
+                var eventName = this.data.event;
+                var timeoutSet;
+                var pastPresentFuture = el.id;
+                var positionAttribute = el.getAttribute("position");
+
+                el.addEventListener("click", function () {
+                    console.log(pastPresentFuture);
+                    console.log(positionAttribute);
+                if (pastPresentFuture === "past" && animatePast === true) {
+                    console.log(animatePast); 
+
+                    animatePastRef.set(false)
+                    animatePastRef.on("value", function(data) {
+                    var dataValue = data.val();
+                    if (dataValue === false){
+                        el.emit(eventName);
+                    }
+                });
+                    animatePast = false;//el.emit(eventName);
+                    currentCard.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberPast + ".jpg");
+                    console.log("Past card turned over.");
+                } else if (pastPresentFuture === "present" && animatePresent === true) {
+                    console.log(animatePresent);
+                    el.emit(eventName);
+                    animatePresentRef.set(false);
+                    animatePresent = false;
+                    currentCard.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberPresent + ".jpg");
+                    console.log("Present card turned over.");
+                } else if (pastPresentFuture === "future" && animateFuture === true) {
+                    console.log(animateFuture);
+                    el.emit(eventName);
+                    animateFutureRef.set(false);
+                    animateFuture = false;
+                    currentCard.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberFuture + ".jpg");
+                    console.log("Future card turned over.");
+                    
+                }
+             })
+                animatePastRef.on("value", function(data) {
+                    var dataValue = data.val();
+                    if (animatePast == dataValue && pastPresentFuture === "past" && animatePast == false    ){
+                        el.emit(eventName);
+                        console.log(dataValue);
+                        console.log(animatePast);
+                    }
+                    });
+                     animatePresentRef.on("value", function(data) {
+                    var dataValue = data.val();
+                    if (animatePresent == dataValue && pastPresentFuture === "present" && animatePresent == false){
+                        el.emit(eventName);
+                        console.log(dataValue);
+                        console.log(animatePast);
+                    }
+                    });
+                     animateFutureRef.on("value", function(data) {
+                    var dataValue = data.val();
+                    if (animateFuture == dataValue && pastPresentFuture === "future" && animateFuture == false){
+                        el.emit(eventName);
+                        console.log(dataValue);
+                        console.log(animatePast);
+                    }
+                    });
+
+         }
+    });
+        </script>
+
+        <script>
+            AFRAME.registerComponent("reset-button", {
+                schema: {
+                    event: {type: "string"}
+
+            },
+
+            init: function () {
+
+                var resetClicked;
+                var el = this.el;
+                var eventName = this.data.event;
+                var past = document.getElementById("past");
+                var present = document.getElementById("present");
+                var future = document.getElementById("future");
+
+                el.addEventListener("click", function () {
+                    if (animatePast == false && animatePresent == false && animateFuture == false) {
+                    resetButtonRef.set(true);
+                    newReading();
+                    animatePast = true;
+                    animatePresent = true;
+                    animateFuture = true;
+                    currentCard.setAttribute('src', "#card-back");
+                    console.log("Reading has been reset!");
+
+                }
+             })
+
+                resetButtonRef.on("value", function(data) {
+                    if (data.val() == true && eventName == "turnBackCard") {
+                        past.emit(eventName);
+                        present.emit(eventName);
+                        future.emit(eventName);
+                        animatePast = true;
+                        console.log("Played animation : " + eventName);
+                        resetButtonClicked = true;
+
+                    }
+                    });
+
+
+         }
+    });
+        </script>
+
+    </head>
+    <body onload>
+        <a-scene altspace="fullspace:true"  sync-system="author: winrar; app: tarotapp">
+
+            <a-assets>
+                <a-asset-item id="tablecloth-obj" src="models/tablecloth.obj"></a-asset-item>
+                <a-asset-item id="tablecloth-mtl" src="models/tablecloth.mtl"></a-asset-item>
+                <a-asset-item id="base-obj" src="models/base.obj"></a-asset-item>
+                <a-asset-item id="base-mtl" src="models/base.mtl"></a-asset-item>
+                <a-asset-item id="tablemain-obj" src="models/tablemain.obj"></a-asset-item>
+                <a-asset-item id="tablemain-mtl" src="models/tablemain.mtl"></a-asset-item>
+                <img id="card-back" src="images/card-back.jpg" />
+
+            </a-assets>
+
+            <a-entity obj-model="obj: #tablecloth-obj ; mtl: #tablecloth-mtl" scale="0.007 0.007 0.007" position="0 -0.2 0" n-mesh-collider='type: environment'></a-entity>
+            <a-entity obj-model="obj: #base-obj ; mtl: #base-mtl" scale="0.007 0.007 0.007" position="0 -0.2 0" n-mesh-collider='type: environment'></a-entity>
+            <a-entity obj-model="obj: #tablemain-obj ; mtl: #tablemain-mtl" scale="0.007 0.007 0.007" position="0 -0.2 0" n-mesh-collider='type: environment'></a-entity>
+            <a-plane id="currentcard" src="#card-back" n-billboard position="0 6 0" color="white" scale="1.4 2"></a-plane>
+            <a-box reset-button="event: turnBackCard" n-mesh-collider='type: object'></a-box>
+
+            <a-entity position="-0.6 1.4 0.4" scale="0.1 0.1 0.1" n-text='text: Past'></a-entity>
+            <a-entity position="0 1.4 0.4" scale="0.1 0.1 0.1" n-text='text: Present'></a-entity>
+            <a-entity position="0.6 1.4 0.4" scale="0.1 0.1 0.1" n-text='text: Future'></a-entity>
+
+            <a-entity id="present" animate-on-click="event: startPresentAnimation" position="0 1.3 0.6" scale="0.4 0.5" rotation="270 180">
+                <a-plane id="backplanepresent" material="side: back; src: #card-back"></a-plane>
+                <a-plane material="side: front; src: #card-back"></a-plane>
+                <a-animation id="thisisatest" attribute="rotation"
+                             from="270 180 0"
+                             dur="1000"
+                             fill="fowards"
+                             to="90 180 0"
+                             begin="startPresentAnimation"></a-animation>
+                <a-animation attribute="rotation"
+                             dur="1000"
+                             fill="fowards"
+                             to="270 180 0"
+                             begin="turnBackCard"></a-animation>
+            </a-entity>
+
+            <a-entity id="future" animate-on-click="event: startFutureAnimation" position="0.6 1.3 0.6" scale="0.4 0.5" rotation="270 180">
+                <a-plane id="backplanefuture" material="side: back; src: #card-back"></a-plane>
+                <a-plane material="side: front; src: #card-back"></a-plane>
+                <a-animation attribute="rotation"
+                             dur="1000"
+                             fill="fowards"
+                             to="90 180 0"
+                             begin="startFutureAnimation"></a-animation>
+                <a-animation attribute="rotation"
+                             dur="1000"
+                             fill="fowards"
+                             to="270 180 0"
+                             begin="turnBackCard"></a-animation>
+            </a-entity>
+
+            <a-entity id="past" animate-on-click="event: startPastAnimation" position="-0.6 1.3 0.6" scale="0.4 0.5" rotation="270 180">
+                <a-plane id="backplanepast" material="side: back; src: #card-back"></a-plane>
+                <a-plane material="side: front; src: #card-back"></a-plane>
+                <a-animation attribute="rotation"
+                             dur="1000"
+                             fill="fowards"
+                             to="90 180 0"
+                             begin="startPastAnimation"></a-animation>
+                <a-animation attribute="rotation"
+                             dur="1000"
+                             fill="fowards"
+                             to="270 180 0"
+                             begin="turnBackCard"></a-animation>
+            </a-entity>
+        </a-scene>
+
+               <script>
+            var resetButtonClicked = false;
+            var tarotArray;
+            var resetButtonRef = firebase.database().ref().child("Reset Button Clicked");
+            var firebaseRef = firebase.database().ref();
+            var firebasePastRef = firebase.database().ref().child("Past Number");
+            var firebasePresentRef = firebase.database().ref().child("Present Number");
+            var firebaseFutureRef = firebase.database().ref().child("Future Number");
+            var randomNumberPresent;
+            var randomNumberFuture;
+            var randomNumberPast;
+            var animatePastRef = firebase.database().ref().child("Past Pressed");
+            var animatePresentRef = firebase.database().ref().child("Present Pressed");
+            var animateFutureRef = firebase.database().ref().child("Future Pressed");
+            var animatePast = true;
+            var animatePresent = true;
+            var animateFuture = true;
+            var currentCard = document.getElementById("currentcard");
+            var syncedNumberPresent;
+
+            function newReading() {
+                randomNumberPresent = Math.floor(Math.random() * 78 + 1)
+                firebaseRef.child("Present Number").set(randomNumberPresent);
+                randomNumberFuture = Math.floor(Math.random() * 78 + 1);
+                firebaseRef.child("Future Number").set(randomNumberFuture);
+                randomNumberPast = Math.floor(Math.random() * 78 + 1);
+                firebaseRef.child("Past Number").set(randomNumberPast);
+                firebasePastRef.on("value", function(data) {
+                    randomNumberPast = data.val();
+
+                });
+                firebasePresentRef.on("value", function(data) {
+                    randomNumberPresent = data.val();
+                });
+                firebaseFutureRef.on("value", function(data) {
+                    randomNumberFuture = data.val();
+                });                
+
+
+                console.log(randomNumberFuture);
+                resetButtonRef.set(false);
+                // Present
+                  var backPlanePresent = document.getElementById("backplanepresent");
+                backPlanePresent.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberPresent + ".jpg");
+                console.log("Present number : " + syncedNumberPresent);
+
+                // Future
+                var backPlaneFuture = document.getElementById("backplanefuture");
+                backPlaneFuture.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberFuture + ".jpg");
+                console.log("Future number : " + randomNumberFuture);
+
+                // Past
+                var backPlanePast = document.getElementById("backplanepast");
+                backPlanePast.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberPast + ".jpg");
+                console.log("Past number : " + randomNumberPast);
+
+                console.log(animatePast);
+                }
+                                animatePastRef.set(true);
+                console.log("this is a testsdfsdfdsf");
+                animatePresentRef.set(true);
+                animateFutureRef.set(true);
+                animatePastRef.on("value", function(data) {
+                    animatePast = data.val();
+                });
+                animatePresentRef.on("value", function(data) {
+                    animatePresent = data.val();
+                });
+                animateFutureRef.on("value", function(data) {
+                    animateFuture = data.val();
+                });
+            newReading();
+        </script>
+    </body>
+</html>
