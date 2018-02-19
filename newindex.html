@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+
+        <!-- Scripts -->
+
+        <script src="https://aframe.io/releases/0.7.0/aframe.min.js"></script>
+
+        <script src="https://cdn.rawgit.com/mrdoob/three.js/r84/build/three.js"></script>
+
+        <script src="https://sdk.altvr.com/libs/altspace.js/2.7.3/altspace.min.js"></script>
+
+        <script src="https://www.gstatic.com/firebasejs/4.10.0/firebase.js"></script>
+
+        <script src="deck3.js"></script>
+
+        <script>
+
+         // Initialize Firebase
+
+         const config = {
+
+         apiKey: "AIzaSyBLgpzBCUGvEj_Mp04itbrTyvYFC8EtFUg",
+
+         authDomain: "tarotapp-f5b54.firebaseapp.com",
+
+         databaseURL: "https://tarotapp-f5b54.firebaseio.com",
+
+         projectId: "tarotapp-f5b54",
+
+         storageBucket: "tarotapp-f5b54.appspot.com",
+
+         messagingSenderId: "26210660102"
+
+         };
+
+         firebase.initializeApp(config);
+
+        </script>
+
+        <script>
+
+        // This component is for flipping over the cards when clicked.
+
+        AFRAME.registerComponent("animate-on-click", { 
+
+            schema: {
+
+                event: {type: "string"}
+
+        },
+
+        init: function () {
+
+            var el = this.el;
+
+            var eventName = this.data.event;
+
+            var pastPresentFuture = el.id;
+
+            var numberToText;
+
+            el.addEventListener("click", function () {
+
+                if (pastPresentFuture === "past" && animatePast === true) {
+
+                    animatePast = false;
+
+                    el.emit(eventName);
+
+                    currentCard.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberPast + ".jpg");
+
+                    numberToText = randomNumberPast.toString();
+
+                    title.setAttribute("n-text", "text", tarotDeck[numberToText]["card-name"]);
+
+                    meaning.setAttribute("n-text", "text", tarotDeck[numberToText]["card-meaning"]);
+
+                    console.log("Past card turned over.");
+
+                } else if (pastPresentFuture === "present" && animatePresent === true) {
+
+                    animatePresent = false;
+
+                    el.emit(eventName);
+
+                    currentCard.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberPresent + ".jpg");
+
+                    numberToText = randomNumberPresent.toString();
+
+                    title.setAttribute("n-text", "text", tarotDeck[numberToText]["card-name"]);
+
+                    meaning.setAttribute("n-text", "text", tarotDeck[numberToText]["card-meaning"]);
+
+                    console.log("Present card turned over.");
+
+                } else if (pastPresentFuture === "future" && animateFuture === true) {
+
+                    animateFuture = false;
+
+                    el.emit(eventName);
+
+                    currentCard.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberFuture + ".jpg");
+
+                    numberToText = randomNumberFuture.toString();
+
+                    title.setAttribute("n-text", "text", tarotDeck[numberToText]["card-name"]);
+
+                    meaning.setAttribute("n-text", "text", tarotDeck[numberToText]["card-meaning"]);
+
+                    console.log("Future card turned over.");
+                    
+                }
+             
+            });
+
+        }
+
+    });
+     
+        </script>
+
+        <script>
+
+        // This component is for resetting the reading
+
+        AFRAME.registerComponent("reset-button", {
+
+            schema: {
+
+                event: {type: "string"}
+
+            },
+
+        init: function () {
+
+            var el = this.el;
+
+            var eventName = this.data.event;
+
+            var past = document.getElementById("past");
+
+            var present = document.getElementById("present");
+
+            var future = document.getElementById("future");
+
+            el.addEventListener("click", function () {
+
+                    if (animatePast == false && animatePresent == false && animateFuture == false) {
+
+                    newReading();
+
+                    past.emit(eventName);
+
+                    present.emit(eventName);
+                        
+                    future.emit(eventName);
+
+                }
+
+            })
+
+         }
+
+    });
+
+        </script>
+
+    </head>
+
+    <body>
+
+        <a-scene altspace="fullspace:true"  sync-system="author: winrar; app: tarotapp">
+
+            <a-assets>
+
+                <a-asset-item id="tablecloth-obj" src="models/tablecloth.obj"></a-asset-item>
+
+                <a-asset-item id="tablecloth-mtl" src="models/tablecloth.mtl"></a-asset-item>
+
+                <a-asset-item id="base-obj" src="models/base.obj"></a-asset-item>
+
+                <a-asset-item id="base-mtl" src="models/base.mtl"></a-asset-item>
+
+                <a-asset-item id="tablemain-obj" src="models/tablemain.obj"></a-asset-item>
+
+                <a-asset-item id="tablemain-mtl" src="models/tablemain.mtl"></a-asset-item>
+
+                <img id="card-back" src="images/card-back.jpg" />
+
+            </a-assets>
+
+            <a-entity obj-model="obj: #tablecloth-obj ; mtl: #tablecloth-mtl" scale="0.007 0.007 0.007" position="0 -0.2 0" n-mesh-collider='type: environment'></a-entity>
+
+            <a-entity obj-model="obj: #base-obj ; mtl: #base-mtl" scale="0.007 0.007 0.007" position="0 -0.2 0" n-mesh-collider='type: environment'></a-entity>
+
+            <a-entity obj-model="obj: #tablemain-obj ; mtl: #tablemain-mtl" scale="0.007 0.007 0.007" position="0 -0.2 0" n-mesh-collider='type: environment'></a-entity>
+
+            <a-plane id="currentcard" src="#card-back" n-billboard position="0 4.5 0" color="white" scale="1.4 2"></a-plane>
+
+            <a-box reset-button="event: turnBackCard" n-mesh-collider='type: object'></a-box>
+
+            <a-entity n-billboard id="title" position="0 5.9 0" scale="0.3 0.3 0.3" n-text='text: Flip the cards'></a-entity>
+
+            <a-entity n-billboard id="meaning" position="0 2.9 0" scale="0.3 0.3 0.3" n-text='text: Reveal your fate'></a-entity>
+
+            <a-entity position="-0.6 1.4 0.4" scale="0.1 0.1 0.1" n-text='text: Past'></a-entity>
+
+            <a-entity position="0 1.4 0.4" scale="0.1 0.1 0.1" n-text='text: Present'></a-entity>
+
+            <a-entity position="0.6 1.4 0.4" scale="0.1 0.1 0.1" n-text='text: Future'></a-entity>
+
+            <a-entity id="present" animate-on-click="event: startPresentAnimation" position="0 1.3 0.6" scale="0.4 0.5" rotation="270 180">
+
+                <a-plane id="backplanepresent" material="side: back; src: #card-back"></a-plane>
+
+                <a-plane material="side: front; src: #card-back"></a-plane>
+
+                <a-animation id="thisisatest" attribute="rotation"
+                             from="270 180 0"
+                             dur="1000"
+                             fill="fowards"
+                             to="90 180 0"
+                             begin="startPresentAnimation"></a-animation>
+
+                <a-animation attribute="rotation"
+                             dur="1000"
+                             fill="fowards"
+                             to="270 180 0"
+                             begin="turnBackCard"></a-animation>
+            </a-entity>
+
+            <a-entity id="future" animate-on-click="event: startFutureAnimation" position="0.6 1.3 0.6" scale="0.4 0.5" rotation="270 180">
+
+                <a-plane id="backplanefuture" material="side: back; src: #card-back"></a-plane>
+
+                <a-plane material="side: front; src: #card-back"></a-plane>
+
+                <a-animation attribute="rotation"
+                             dur="1000"
+                             fill="fowards"
+                             to="90 180 0"
+                             begin="startFutureAnimation"></a-animation>
+
+                <a-animation attribute="rotation"
+                             dur="1000"
+                             fill="fowards"
+                             to="270 180 0"
+                             begin="turnBackCard"></a-animation>
+            </a-entity>
+
+            <a-entity id="past" animate-on-click="event: startPastAnimation" position="-0.6 1.3 0.6" scale="0.4 0.5" rotation="270 180">
+
+                <a-plane id="backplanepast" material="side: back; src: #card-back"></a-plane>
+
+                <a-plane material="side: front; src: #card-back"></a-plane>
+
+                <a-animation attribute="rotation"
+                             dur="1000"
+                             fill="fowards"
+                             to="90 180 0"
+                             begin="startPastAnimation"></a-animation>
+
+                <a-animation attribute="rotation"
+                             dur="1000"
+                             fill="fowards"
+                             to="270 180 0"
+                             begin="turnBackCard"></a-animation>
+            </a-entity>
+
+        </a-scene>
+
+        <script>
+
+        var randomNumberPresent;
+
+        var randomNumberFuture;
+
+        var randomNumberPast;
+
+        var animatePast = true;
+
+        var animatePresent = true;
+
+        var animateFuture = true;
+
+        var currentCard = document.getElementById("currentcard");
+
+        var title = document.getElementById("title"); 
+
+        var meaning = document.getElementById("meaning");
+
+        function newReading() {
+
+            randomNumberPresent = Math.floor(Math.random() * 78 + 1);
+
+            randomNumberFuture = Math.floor(Math.random() * 78 + 1);
+
+            randomNumberPast = Math.floor(Math.random() * 78 + 1);
+
+            animatePast = true;
+
+            animatePresent = true;
+
+            animateFuture = true;
+
+            currentCard.setAttribute('src', "#card-back");
+
+            title.setAttribute("n-text", "text", "Flip the cards");
+
+            meaning.setAttribute("n-text", "text", "Reveal your fate");
+
+            console.log(randomNumberFuture);
+
+            // Present
+
+            var backPlanePresent = document.getElementById("backplanepresent");
+
+            backPlanePresent.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberPresent + ".jpg");
+
+            console.log("Present number : " + randomNumberPresent);
+
+            // Future
+
+            var backPlaneFuture = document.getElementById("backplanefuture");
+
+            backPlaneFuture.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberFuture + ".jpg");
+
+            console.log("Future number : " + randomNumberFuture);
+
+            // Past
+
+            var backPlanePast = document.getElementById("backplanepast");
+
+            backPlanePast.setAttribute('src', "https://cdn.rawgit.com/Winrur/tarot-test-2/42650ced/tarot/" + randomNumberPast + ".jpg");
+
+            console.log("Past number : " + randomNumberPast);
+
+        }
+
+            newReading();
+
+        </script>
+
+    </body>
+
+</html>
